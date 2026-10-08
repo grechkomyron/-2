@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Clicker</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #143d24, #2d7a3e);
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .game {
+        width: 900px;
+        max-width: 95%;
+        background: #102418;
+        border-radius: 25px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        color: #b9e8b9;
+        margin-bottom: 25px;
+    }
+
+    .score {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+
+    .bug {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        border: none;
+        background: #74c947;
+        font-size: 130px;
+        cursor: pointer;
+        transition: 0.12s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .bug:hover {
+        transform: scale(1.05);
+    }
+
+    .bug:active {
+        transform: scale(0.9);
+    }
+
+    .shop {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .upgrade {
+        background: #1c3825;
+        border: 2px solid #3f7048;
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    .upgrade h2 {
+        margin-bottom: 8px;
+    }
+
+    .upgrade p {
+        color: #b8d8bc;
+        margin-bottom: 12px;
+    }
+
+    .upgrade button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: #66bb55;
+        color: white;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .upgrade button:hover {
+        background: #7bd568;
+    }
+
+    .stats {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        background: #0b1a10;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .float {
+        position: fixed;
+        pointer-events: none;
+        font-size: 25px;
+        font-weight: bold;
+        animation: fly 0.8s forwards;
+    }
+
+    @keyframes fly {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-80px);
+        }
+    }
+
+    @media (max-width: 650px) {
+        .shop {
+            grid-template-columns: 1fr;
+        }
+
+        h1 {
+            font-size: 32px;
+        }
+
+        .bug {
+            width: 200px;
+            height: 200px;
+            font-size: 100px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>🐞 Bug Clicker</h1>
+    <p class="subtitle">Клікай на комах та збирай монети!</p>
+
+    <div class="score">
+        🪙 <span id="coins">0</span>
+    </div>
+
+    <button class="bug" id="bug">🐞</button>
+
+    <div class="stats">
+        <div>За клік: <b id="perClick">1</b></div>
+        <div>Автоклікер: <b id="auto">0</b>/сек</div>
+    </div>
+
+    <div class="shop">
+
+        <div class="upgrade">
+            <h2>🦋 Сильніший клік</h2>
+            <p>Збільшує монети за один клік</p>
+            <button id="clickUpgrade">
+                Купити — <span id="clickPrice">25</span> 🪙
+            </button>
+        </div>
+
+        <div class="upgrade">
+            <h2>🐜 Автоклікер</h2>
+            <p>Автоматично збирає монети</p>
+            <button id="autoUpgrade">
+                Купити — <span id="autoPrice">100</span> 🪙
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+let coins = 0;
+let perClick = 1;
+let autoClick = 0;
+
+let clickPrice = 25;
+let autoPrice = 100;
+
+const coinsText = document.getElementById("coins");
+const perClickText = document.getElementById("perClick");
+const autoText = document.getElementById("auto");
+
+const clickPriceText = document.getElementById("clickPrice");
+const autoPriceText = document.getElementById("autoPrice");
+
+const bug = document.getElementById("bug");
+
+function update() {
+    coinsText.textContent = Math.floor(coins);
+    perClickText.textContent = perClick;
+    autoText.textContent = autoClick;
+
+    clickPriceText.textContent = clickPrice;
+    autoPriceText.textContent = autoPrice;
+}
+
+function addCoins(amount) {
+    coins += amount;
+    update();
+}
+
+function floatingText(x, y, text) {
+    const element = document.createElement("div");
+
+    element.className = "float";
+    element.textContent = "+" + text + " 🪙";
+
+    element.style.left = x + "px";
+    element.style.top = y + "px";
+
+    document.body.appendChild(element);
+
+    setTimeout(() => {
+        element.remove();
+    }, 800);
+}
+
+bug.addEventListener("click", function(event) {
+
+    addCoins(perClick);
+
+    floatingText(
+        event.clientX,
+        event.clientY,
+        perClick
+    );
+
+});
+
+document.getElementById("clickUpgrade").addEventListener("click", function() {
+
+    if (coins >= clickPrice) {
+
+        coins -= clickPrice;
+
+        perClick++;
+
+        clickPrice = Math.floor(clickPrice * 1.7);
+
+        update();
+    }
+
+});
+
+document.getElementById("autoUpgrade").addEventListener("click", function() {
+
+    if (coins >= autoPrice) {
+
+        coins -= autoPrice;
+
+        autoClick++;
+
+        autoPrice = Math.floor(autoPrice * 1.8);
+
+        update();
+    }
+
+});
+
+setInterval(function() {
+
+    if (autoClick > 0) {
+        addCoins(autoClick);
+    }
+
+}, 1000);
+
+update();
+
+</script>
+
+</body>
+</html>
